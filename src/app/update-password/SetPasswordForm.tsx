@@ -122,10 +122,10 @@ export default function SetPasswordForm({ linkError }: { linkError: string | nul
         <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-red-50 text-primary dark:bg-red-950/40">
           <KeyRound className="h-6 w-6" />
         </div>
-        <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-primary">You&apos;re invited</p>
-        <h1 className="mt-3 font-heading text-3xl font-extrabold tracking-tight">Set your password</h1>
+        <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-primary">Set a new password</p>
+        <h1 className="mt-3 font-heading text-3xl font-extrabold tracking-tight">Choose your password</h1>
         <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
-          Choose a password to activate your owner/HR account.
+          Set a password to activate your account or finish resetting it.
         </p>
       </div>
 

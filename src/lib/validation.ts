@@ -62,6 +62,10 @@ export const teamMemberIdSchema = z.object({
   userId: z.string().uuid("The team member is invalid."),
 });
 
+export const forgotPasswordSchema = z.object({
+  email: z.string().trim().email("Enter a valid email address").max(160),
+});
+
 export type EmployeeInput = z.infer<typeof employeeSchema>;
 export type LocationInput = z.infer<typeof locationSchema>;
 

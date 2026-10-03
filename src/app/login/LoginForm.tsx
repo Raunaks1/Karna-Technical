@@ -97,6 +97,11 @@ export default function LoginForm() {
           {loading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
           {loading ? "Signing in..." : "Sign in securely"}
         </button>
+        <div className="text-center">
+          <Link href="/forgot-password" className="text-xs font-bold text-slate-500 transition hover:text-primary dark:text-slate-400">
+            Forgot password?
+          </Link>
+        </div>
       </form>
 
       <div className="mt-7 flex items-start gap-3 rounded-xl bg-slate-50 p-4 text-xs leading-5 text-slate-500 dark:bg-white/5 dark:text-slate-400">
