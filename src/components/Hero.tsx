@@ -9,6 +9,7 @@ export default function Hero() {
           src="/images/hero_landscape_team_1789927120091.jpg"
           alt="Karna Technical Fire & Safety Services team"
           fill
+          sizes="100vw"
           className="object-cover object-center"
           priority
         />
@@ -22,14 +23,14 @@ export default function Hero() {
               </span>
               <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-heading font-extrabold text-white leading-[1.1] mb-4">
                 Karna Technical<br />
-                <span className="text-primary">Fire & Safety</span><br />
+                <span className="text-primary">Engineering</span><br />
                 Services
               </h1>
               <p className="text-gray-200 text-base md:text-lg max-w-md mb-4 leading-relaxed">
                 A professionally managed organization providing comprehensive Engineering, Manpower, Fire & Safety, Training, Equipment, Audit, and Compliance Services.
               </p>
               <p className="text-yellow-400 font-semibold text-sm mb-10 tracking-wide">
-                ISO 9001:2015 Certified Company
+                ISO 9001:2026 Certified Company
               </p>
               <div className="flex flex-wrap gap-4 mb-12">
                 <a
@@ -39,7 +40,7 @@ export default function Hero() {
                   Our Services
                 </a>
                 <a
-                  href="#branches"
+                  href="mailto:karnatech@karnaengservice.com"
                   className="bg-white/10 hover:bg-white/20 border border-white/50 text-white px-8 py-3 text-sm font-bold tracking-wider uppercase transition-colors rounded-sm backdrop-blur-sm"
                 >
                   Contact Us

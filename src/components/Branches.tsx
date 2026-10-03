@@ -10,7 +10,7 @@ export default function Branches() {
   ];
 
   return (
-    <section id="branches" className="py-20 bg-gray-50 dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 transition-colors duration-300">
+    <section id="branches" className="py-20 bg-gray-50 dark:bg-gray-950 border-t border-gray-100 dark:border-gray-800 transition-colors duration-300 scroll-mt-20">
       <div className="container mx-auto px-4 md:px-8">
         <div className="text-center mb-16">
           <span className="text-primary font-bold text-xs tracking-widest uppercase mb-4 block">
@@ -69,17 +69,17 @@ export default function Branches() {
               <div className="flex-1 space-y-3 text-sm">
                 <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400">
                   <Phone className="text-primary shrink-0" size={18} />
-                  <a href="tel:8905214092" className="hover:text-primary transition-colors font-medium">
-                    +91 89052 14092
+                  <a href="tel:+918169437734" className="hover:text-primary transition-colors font-medium">
+                    +91 8169437734
                   </a>
                 </div>
                 <div className="flex items-center gap-3 text-gray-600 dark:text-gray-400">
                   <Mail className="text-primary shrink-0" size={18} />
                   <a
-                    href="mailto:karnatech86ktfss@gmail.com"
+                    href="mailto:karnatech@karnaengservice.com"
                     className="hover:text-primary transition-colors font-medium break-all"
                   >
-                    karnatech86ktfss@gmail.com
+                    karnatech@karnaengservice.com
                   </a>
                 </div>
                 <p className="text-xs text-gray-400 dark:text-gray-500 pt-1">

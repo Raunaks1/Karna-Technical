@@ -139,7 +139,7 @@ export default function Services() {
   }, []);
 
   return (
-    <section id="services" className="relative z-20 -mt-16 lg:-mt-24 pb-20">
+    <section id="services" className="relative z-20 -mt-16 lg:-mt-24 pb-20 scroll-mt-20">
       <div className="container mx-auto px-4 md:px-8">
         <div className="relative max-w-4xl mx-auto">
           <div className="overflow-hidden relative min-h-[580px] md:min-h-[480px]">

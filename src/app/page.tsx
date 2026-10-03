@@ -2,6 +2,7 @@ import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import Services from "@/components/Services";
 import About from "@/components/About";
+import Gallery from "@/components/Gallery";
 import Branches from "@/components/Branches";
 import Partners from "@/components/Partners";
 import CtaBanner from "@/components/CtaBanner";
@@ -15,6 +16,7 @@ export default function Home() {
         <Hero />
         <Services />
         <About />
+        <Gallery />
         <Branches />
         <Partners />
         <CtaBanner />

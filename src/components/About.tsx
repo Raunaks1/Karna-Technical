@@ -13,7 +13,7 @@ const commitmentPoints = [
 
 export default function About() {
   return (
-    <section id="about" className="py-20 lg:py-32 relative overflow-hidden bg-white dark:bg-gray-900 transition-colors duration-300">
+    <section id="about" className="py-20 lg:py-32 relative overflow-hidden bg-white dark:bg-gray-900 transition-colors duration-300 scroll-mt-20">
       <div
         className="absolute left-0 top-0 w-64 h-full opacity-10 pointer-events-none"
         style={{ backgroundImage: "radial-gradient(#888 1px, transparent 1px)", backgroundSize: "16px 16px" }}
@@ -66,7 +66,7 @@ export default function About() {
                 Our Services
               </a>
               <a
-                href="#branches"
+                href="mailto:karnatech@karnaengservice.com"
                 className="border-2 border-gray-200 dark:border-gray-600 hover:border-gray-900 dark:hover:border-gray-300 text-gray-900 dark:text-white px-8 py-3 text-sm font-bold tracking-wider transition-colors rounded-sm uppercase bg-white dark:bg-transparent"
               >
                 Contact Us
@@ -76,10 +76,22 @@ export default function About() {
 
           <div className="w-full lg:w-7/12 relative min-h-[500px]">
             <div className="absolute top-0 right-0 w-[70%] h-[350px] z-10 shadow-lg">
-              <Image src="/images/about_handshake_1789924243006.jpg" alt="Partnership Handshake" fill className="object-cover" />
+              <Image
+                src="/images/about_handshake_1789924243006.jpg"
+                alt="Karna Technical team member shaking hands with a client representative to mark the start of a manpower deployment agreement"
+                fill
+                sizes="(max-width: 1024px) 70vw, 40vw"
+                className="object-cover"
+              />
             </div>
             <div className="absolute bottom-0 left-0 w-[60%] h-[350px] z-20 shadow-2xl border-8 border-white dark:border-gray-800">
-              <Image src="/images/about_technician_1789924227342.jpg" alt="Fire Safety Technician" fill className="object-cover" />
+              <Image
+                src="/images/about_technician_1789924227342.jpg"
+                alt="Karna Technical safety technician inspecting fire protection equipment on a client site"
+                fill
+                sizes="(max-width: 1024px) 60vw, 35vw"
+                className="object-cover"
+              />
             </div>
           </div>
         </div>

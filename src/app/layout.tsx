@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import CookieBanner from "@/components/CookieBanner";
+import Analytics from "@/components/Analytics";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -15,7 +17,7 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: "Karna Technical Fire & Safety Services",
-  description: "An ISO 9001:2015 Certified Company providing Engineering, Manpower, Fire & Safety, Training, Equipment, Audit, and Compliance Services across India.",
+  description: "An ISO 9001:2026 Certified Company providing Engineering, Manpower, Fire & Safety, Training, Equipment, Audit, and Compliance Services across India.",
 };
 
 export default function RootLayout({
@@ -28,6 +30,8 @@ export default function RootLayout({
       <body className={`${inter.variable} ${outfit.variable} antialiased`}>
         <ThemeProvider>
           {children}
+          <CookieBanner />
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>

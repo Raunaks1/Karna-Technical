@@ -9,7 +9,7 @@ export default function Partners() {
   ];
 
   return (
-    <section id="partners" className="py-20 bg-white dark:bg-gray-900 transition-colors duration-300">
+    <section id="partners" className="py-20 bg-white dark:bg-gray-900 transition-colors duration-300 scroll-mt-20">
       <div className="container mx-auto px-4 md:px-8">
         <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-24">
           <div className="lg:w-1/3 text-center lg:text-left">

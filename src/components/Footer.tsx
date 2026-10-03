@@ -27,20 +27,23 @@ export default function Footer() {
               </div>
               <div className="flex items-center gap-3">
                 <Phone className="text-primary shrink-0" size={20} />
-                <a href="tel:+918905214092" className="text-sm hover:text-white transition-colors">
-                  +91 8905214092 (Ms. Swati Sen)
+                <a href="tel:+918169437734" className="text-sm hover:text-white transition-colors">
+                  +91 8169437734 (Ms. Swati Sen)
                 </a>
               </div>
               <div className="flex items-center gap-3">
                 <Mail className="text-primary shrink-0" size={20} />
-                <a href="mailto:karnatech86ktfss@gmail.com" className="text-sm hover:text-white transition-colors">
-                  karnatech86ktfss@gmail.com
+                <a href="mailto:karnatech@karnaengservice.com" className="text-sm hover:text-white transition-colors">
+                  karnatech@karnaengservice.com
                 </a>
               </div>
             </div>
-            <button className="bg-primary hover:bg-primary-hover text-white px-8 py-3 text-sm font-bold tracking-wider transition-colors rounded-sm uppercase">
+            <a
+              href="mailto:karnatech@karnaengservice.com"
+              className="bg-primary hover:bg-primary-hover text-white px-8 py-3 text-sm font-bold tracking-wider transition-colors rounded-sm uppercase"
+            >
               Contact Us
-            </button>
+            </a>
           </div>
 
           {/* Quick Links */}
@@ -48,10 +51,12 @@ export default function Footer() {
             <h3 className="text-lg font-bold text-white mb-6">Quick Links</h3>
             <ul className="flex flex-col gap-3">
               <li><Link href="/" className="text-sm hover:text-primary transition-colors">Home</Link></li>
-              <li><Link href="#about" className="text-sm hover:text-primary transition-colors">About Us</Link></li>
-              <li><Link href="#services" className="text-sm hover:text-primary transition-colors">Our Services</Link></li>
-              <li><Link href="#partners" className="text-sm hover:text-primary transition-colors">Channel Partners</Link></li>
-              <li><Link href="#branches" className="text-sm hover:text-primary transition-colors">Our Branches</Link></li>
+              <li><Link href="/#about" className="text-sm hover:text-primary transition-colors">About Us</Link></li>
+              <li><Link href="/#services" className="text-sm hover:text-primary transition-colors">Our Services</Link></li>
+              <li><Link href="/#partners" className="text-sm hover:text-primary transition-colors">Channel Partners</Link></li>
+               <li><Link href="/#branches" className="text-sm hover:text-primary transition-colors">Our Branches</Link></li>
+               <li><Link href="/login" className="text-sm hover:text-primary transition-colors">Owner/HR Login</Link></li>
+               <li><Link href="/privacy-policy" className="text-sm hover:text-primary transition-colors">Privacy Policy</Link></li>
             </ul>
           </div>
 
@@ -70,7 +75,7 @@ export default function Footer() {
 
         <div className="pt-8 border-t border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
           <p>© {new Date().getFullYear()} Karna Technical Fire & Safety Services. All Rights Reserved.</p>
-          <p>An ISO 9001:2015 Certified Company</p>
+          <p>An ISO 9001:2026 Certified Company</p>
         </div>
       </div>
     </footer>

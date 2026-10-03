@@ -12,7 +12,7 @@ export default function CtaBanner() {
             </p>
           </div>
           <a
-            href="tel:8905214092"
+            href="tel:+918169437734"
             className="bg-white hover:bg-gray-100 text-primary px-8 py-4 text-sm font-bold tracking-wider transition-colors rounded-sm uppercase whitespace-nowrap shadow-lg"
           >
             Call Us Now
