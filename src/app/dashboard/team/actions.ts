@@ -62,7 +62,17 @@ export async function inviteMember(
     };
   }
 
-  const admin = createAdminClient();
+  let admin: ReturnType<typeof createAdminClient>;
+  try {
+    admin = createAdminClient();
+  } catch (error) {
+    return {
+      error:
+        error instanceof Error
+          ? error.message
+          : "Team management is not configured. Add SUPABASE_SERVICE_ROLE_KEY and redeploy.",
+    };
+  }
   const { data: created, error: createError } = await admin.auth.admin.createUser({
     email: parsed.data.email,
     password: parsed.data.password,
@@ -177,7 +187,17 @@ export async function resetMemberPassword(
     };
   }
 
-  const admin = createAdminClient();
+  let admin: ReturnType<typeof createAdminClient>;
+  try {
+    admin = createAdminClient();
+  } catch (error) {
+    return {
+      error:
+        error instanceof Error
+          ? error.message
+          : "Team management is not configured. Add SUPABASE_SERVICE_ROLE_KEY and redeploy.",
+    };
+  }
   const { error } = await admin.auth.admin.updateUserById(parsed.data.userId, {
     password: parsed.data.password,
   });

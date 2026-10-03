@@ -9,13 +9,39 @@ import { formatDateTime } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
 
-function initials(name: string) {
-  return name
-    .split(" ")
-    .map((part) => part[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
+function initials(name: string | null | undefined) {
+  const cleaned = (name ?? "").trim();
+
+  if (!cleaned) {
+    return "—";
+  }
+
+  return (
+    cleaned
+      .split(/\s+/)
+      .map((part) => part[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase() || "—"
+  );
+}
+
+function safeDateTime(value: string | null | undefined) {
+  if (!value) {
+    return "—";
+  }
+
+  try {
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+      return "—";
+    }
+
+    return formatDateTime(value);
+  } catch {
+    return "—";
+  }
 }
 
 export default async function TeamPage() {
@@ -29,7 +55,17 @@ export default async function TeamPage() {
     redirect("/dashboard");
   }
 
-  const members = await listTeamMembers();
+  let members: Awaited<ReturnType<typeof listTeamMembers>> = [];
+  let loadError: string | null = null;
+
+  try {
+    members = await listTeamMembers();
+  } catch (error) {
+    // Never crash the route (Next.js 500 + "This page couldn't load").
+    // Missing SUPABASE_SERVICE_ROLE_KEY on Vercel is the common cause:
+    // it exists in local .env.local but was never added to Production env.
+    loadError = error instanceof Error ? error.message : "Unable to load team members.";
+  }
 
   return (
     <div className="space-y-8">
@@ -60,6 +96,28 @@ export default async function TeamPage() {
         </div>
         <InviteMemberForm />
       </section>
+
+      {loadError && (
+        <section className="rounded-2xl border border-red-200 bg-red-50 p-5 text-sm leading-6 text-red-700 dark:border-red-900/50 dark:bg-red-950/30 dark:text-red-300 sm:p-7">
+          <h2 className="font-heading text-base font-extrabold">Team list could not be loaded</h2>
+          <p className="mt-2 font-medium">{loadError}</p>
+          <p className="mt-3 text-xs leading-5 opacity-90">
+            If this works locally but fails on Vercel, check in order: 1){" "}
+            <code className="rounded bg-red-100 px-1.5 py-0.5 font-mono dark:bg-white/10">
+              SUPABASE_SERVICE_ROLE_KEY
+            </code>{" "}
+            is the <strong>service_role</strong> key (not anon), from the same Supabase
+            project, added to the <strong>Production</strong> environment; 2) you{" "}
+            <strong>redeployed after adding it</strong> (env changes need a new deployment);
+            3) Vercel → Logs → Runtime Logs for a{" "}
+            <code className="rounded bg-red-100 px-1.5 py-0.5 font-mono dark:bg-white/10">
+              listTeamMembers failed
+            </code>{" "}
+            entry — its message names the real cause (e.g. invalid API key means a wrong
+            key was pasted). Invites and password resets need this key too.
+          </p>
+        </section>
+      )}
 
       <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#11151d]">
         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-5 dark:border-white/10 sm:px-7">
@@ -134,7 +192,7 @@ export default async function TeamPage() {
                           </span>
                         </td>
                         <td className="px-5 py-5 text-sm text-slate-600 dark:text-slate-300">
-                          {formatDateTime(member.created_at)}
+                          {safeDateTime(member.created_at)}
                         </td>
                         <td className="px-7 py-5 text-right">
                           {isSelf ? (

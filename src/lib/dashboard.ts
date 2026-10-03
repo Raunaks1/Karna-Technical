@@ -204,19 +204,30 @@ export async function listTeamMembers(): Promise<TeamMember[]> {
     ]);
 
   if (profilesError || usersError) {
-    throw new Error("Unable to load team members");
+    // Log the underlying cause so Vercel Runtime Logs show it.
+    // Never include keys — only the Supabase error messages.
+    console.error("listTeamMembers failed", {
+      profilesError: profilesError?.message,
+      usersError: usersError instanceof Error ? usersError.message : usersError,
+    });
+    const detail =
+      profilesError?.message ??
+      (usersError instanceof Error ? usersError.message : null);
+    throw new Error(
+      detail ? `Unable to load team members: ${detail}` : "Unable to load team members",
+    );
   }
 
   const emails = new Map((authUsers?.users ?? []).map((authUser) => [authUser.id, authUser.email ?? ""]));
 
-  return ((profiles ?? []) as { id: string; full_name: string; role: "owner" | "hr"; status: string; created_at: string }[]).map(
+  return ((profiles ?? []) as { id: string; full_name: string | null; role: "owner" | "hr"; status: string | null; created_at: string | null }[]).map(
     (profile) => ({
       id: profile.id,
       email: emails.get(profile.id) ?? "",
-      fullName: profile.full_name,
+      fullName: profile.full_name ?? "",
       role: profile.role,
-      status: profile.status,
-      created_at: profile.created_at,
+      status: profile.status ?? "active",
+      created_at: profile.created_at ?? "",
     }),
   );
 }
