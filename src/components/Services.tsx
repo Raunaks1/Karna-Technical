@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Users, Flame, Shield, FileCheck, CheckCircle2, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function Services() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
 
   const services = [
     {
@@ -129,28 +130,46 @@ export default function Services() {
     },
   ];
 
-  const nextSlide = () => setCurrentIndex((prev) => (prev === services.length - 1 ? 0 : prev + 1));
-  const prevSlide = () => setCurrentIndex((prev) => (prev === 0 ? services.length - 1 : prev - 1));
+  const goToSlide = (index: number) => {
+    setDirection(index > currentIndex ? 1 : -1);
+    setCurrentIndex(index);
+  };
+  const nextSlide = () => {
+    setDirection(1);
+    setCurrentIndex((prev) => (prev === services.length - 1 ? 0 : prev + 1));
+  };
+  const prevSlide = () => {
+    setDirection(-1);
+    setCurrentIndex((prev) => (prev === 0 ? services.length - 1 : prev - 1));
+  };
 
-  useEffect(() => {
-    const timer = setInterval(nextSlide, 6000);
-    return () => clearInterval(timer);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const handleDragEnd = (_: unknown, info: { offset: { x: number } }) => {
+    const swipeThreshold = 60;
+    if (info.offset.x < -swipeThreshold) {
+      nextSlide();
+    } else if (info.offset.x > swipeThreshold) {
+      prevSlide();
+    }
+  };
 
   return (
     <section id="services" className="relative z-20 -mt-16 lg:-mt-24 pb-20 scroll-mt-20">
       <div className="container mx-auto px-4 md:px-8">
         <div className="relative max-w-4xl mx-auto">
           <div className="overflow-hidden relative min-h-[580px] md:min-h-[480px]">
-            <AnimatePresence mode="wait">
+            <AnimatePresence mode="wait" custom={direction}>
               <motion.div
                 key={currentIndex}
-                initial={{ opacity: 0, x: 24 }}
+                custom={direction}
+                initial={{ opacity: 0, x: direction >= 0 ? 24 : -24 }}
                 animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -24 }}
+                exit={{ opacity: 0, x: direction >= 0 ? -24 : 24 }}
                 transition={{ duration: 0.35, ease: "easeInOut" }}
-                className={`bg-white dark:bg-gray-900 shadow-xl dark:shadow-gray-950 flex flex-col h-full border-t-4 ${services[currentIndex].borderColor} absolute inset-0 w-full transition-colors duration-300`}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.6}
+                onDragEnd={handleDragEnd}
+                className={`bg-white dark:bg-gray-900 shadow-xl dark:shadow-gray-950 flex flex-col h-full border-t-4 ${services[currentIndex].borderColor} absolute inset-0 w-full transition-colors duration-300 cursor-grab active:cursor-grabbing touch-pan-y`}
               >
                 <div className="p-8 md:p-12 flex-grow flex flex-col h-full">
                   <div className="flex items-center gap-5 mb-6">
@@ -207,7 +226,7 @@ export default function Services() {
               {services.map((_, idx) => (
                 <button
                   key={idx}
-                  onClick={() => setCurrentIndex(idx)}
+                  onClick={() => goToSlide(idx)}
                   className={`h-3 rounded-full transition-all duration-300 ${
                     currentIndex === idx ? "bg-primary w-6" : "bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 w-3"
                   }`}

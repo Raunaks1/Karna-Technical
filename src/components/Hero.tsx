@@ -6,7 +6,7 @@ export default function Hero() {
     <section className="relative w-full pt-20 md:pt-24 bg-gray-50 overflow-hidden">
       <div className="relative w-full" style={{ minHeight: "85vh" }}>
         <Image
-          src="/images/hero_landscape_team_1789927120091.jpg"
+          src="/images/hero_team_karna_warehouse.jpg"
           alt="Karna Technical Fire & Safety Services team"
           fill
           sizes="100vw"

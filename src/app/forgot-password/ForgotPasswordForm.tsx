@@ -33,7 +33,19 @@ export default function ForgotPasswordForm() {
     setLoading(false);
 
     if (resetError) {
-      setError("The reset link could not be sent. Please try again.");
+      console.error("Password reset failed:", resetError.message);
+      const detail = resetError.message.toLowerCase();
+
+      if (detail.includes("redirect")) {
+        setError(
+          "The reset link could not be sent because this app address is not allowlisted in Supabase. Ask the workspace owner to add /auth/confirm to Redirect URLs under Authentication → URL Configuration.",
+        );
+      } else if (detail.includes("rate limit") || detail.includes("too many") || detail.includes("after a while")) {
+        setError("Too many reset attempts. Wait a few minutes and try again.");
+      } else {
+        setError("The reset link could not be sent. Please try again.");
+      }
+
       return;
     }
 

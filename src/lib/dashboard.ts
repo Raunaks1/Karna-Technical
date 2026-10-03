@@ -232,6 +232,31 @@ export async function listTeamMembers(): Promise<TeamMember[]> {
   );
 }
 
+export type Feedback = {
+  id: string;
+  name: string;
+  company: string;
+  rating: number;
+  service: string;
+  message: string;
+  created_at: string;
+};
+
+export async function listFeedback(): Promise<Feedback[]> {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("feedback")
+    .select("id, name, company, rating, service, message, created_at")
+    .order("created_at", { ascending: false })
+    .limit(50);
+
+  if (error) {
+    throw new Error("Unable to load reviews");
+  }
+
+  return (data ?? []) as Feedback[];
+}
+
 type DeletionRequestRow = {
   id: string;
   employee_id: string;

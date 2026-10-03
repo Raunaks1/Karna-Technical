@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   LayoutDashboard,
   LoaderCircle,
@@ -11,6 +11,7 @@ import {
   Menu,
   Plus,
   ShieldCheck,
+  Star,
   UserCheck,
   UserCog,
   UserRound,
@@ -29,7 +30,7 @@ const navigation = [
   { label: "Locations", href: "/dashboard/locations", icon: MapPin, ownerOnly: false },
   { label: "Approvals", href: "/dashboard/approvals", icon: UserCheck, ownerOnly: true },
   { label: "Team", href: "/dashboard/team", icon: UserCog, ownerOnly: true },
-  { label: "Profile", href: "/dashboard/profile", icon: UserRound, ownerOnly: false },
+  { label: "Feedback", href: "/dashboard/feedback", icon: Star, ownerOnly: false },
 ];
 
 function LogoutButton({ compact = false }: { compact?: boolean }) {
@@ -54,6 +55,90 @@ function LogoutButton({ compact = false }: { compact?: boolean }) {
       {loading ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <LogOut className="h-4 w-4" />}
       Sign out
     </button>
+  );
+}
+
+function ProfileMenu({ user }: { user: DashboardUser }) {
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  const initials = user.fullName
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    function handlePointerDown(event: PointerEvent) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    }
+
+    function handleEscape(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setOpen(false);
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleEscape);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [open ]);
+
+  return (
+    <div ref={menuRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen((prev) => !prev)}
+        aria-haspopup="menu"
+        aria-expanded={open}
+        aria-label="Open profile menu"
+        className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-xs font-bold text-white transition ring-offset-2 ring-offset-white hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary dark:bg-white/10 dark:ring-offset-[#0b0e14]"
+      >
+        {initials}
+      </button>
+
+      {open && (
+        <div
+          role="menu"
+          className="absolute right-0 top-12 w-72 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#11151d]"
+        >
+          <div className="flex items-center gap-3 border-b border-slate-100 p-4 dark:border-white/10">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-secondary text-sm font-bold text-white dark:bg-white/10">
+              {initials}
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-bold">{user.fullName}</p>
+              <p className="truncate text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
+              <span className="mt-1.5 inline-block rounded-full border border-slate-200 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:border-white/10 dark:text-slate-400">
+                {user.role === "owner" ? "Owner" : "HR administrator"}
+              </span>
+            </div>
+          </div>
+          <div className="p-2">
+            <Link
+              href="/dashboard/profile"
+              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white"
+            >
+              <UserRound className="h-4 w-4" />
+              View profile
+            </Link>
+            <div className="mt-1 border-t border-slate-100 pt-2 dark:border-white/10">
+              <LogoutButton compact />
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -144,26 +229,7 @@ export default function DashboardShell({
         </div>
 
         <div className="border-t border-slate-200 p-4 dark:border-white/10">
-          <div className="mb-3 flex items-center gap-3 px-2">
-            <div className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary text-xs font-bold text-white dark:bg-white/10">
-              {user.fullName
-                .split(" ")
-                .map((part) => part[0])
-                .join("")
-                .slice(0, 2)
-                .toUpperCase()}
-            </div>
-            <div className="min-w-0">
-              <p className="truncate text-sm font-semibold">{user.fullName}</p>
-              <p className="text-xs capitalize text-slate-500 dark:text-slate-400">{user.role} access</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="flex-1">
-              <LogoutButton compact />
-            </div>
-            <ThemeToggle />
-          </div>
+          <ThemeToggle />
         </div>
       </aside>
 
@@ -186,19 +252,10 @@ export default function DashboardShell({
             </div>
             <div className="flex items-center gap-3">
               <ThemeToggle />
-              <div className="hidden items-center gap-3 sm:flex">
-                <div className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
-                  {user.role === "owner" ? "Owner" : "HR administrator"}
-                </div>
-                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-xs font-bold text-white dark:bg-white/10">
-                  {user.fullName
-                    .split(" ")
-                    .map((part) => part[0])
-                    .join("")
-                    .slice(0, 2)
-                    .toUpperCase()}
-                </div>
+              <div className="hidden rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 sm:block">
+                {user.role === "owner" ? "Owner" : "HR administrator"}
               </div>
+              <ProfileMenu key={pathname} user={user} />
             </div>
           </div>
         </header>
@@ -258,13 +315,7 @@ export default function DashboardShell({
               })}
             </nav>
             <div className="border-t border-slate-200 pt-4 dark:border-white/10">
-              <p className="mb-3 px-2 text-sm font-semibold">{user.fullName}</p>
-              <div className="flex items-center gap-2">
-                <div className="flex-1">
-                  <LogoutButton compact />
-                </div>
-                <ThemeToggle />
-              </div>
+              <ThemeToggle />
             </div>
           </aside>
         </div>

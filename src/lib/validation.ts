@@ -66,6 +66,30 @@ export const forgotPasswordSchema = z.object({
   email: z.string().trim().email("Enter a valid email address").max(160),
 });
 
+export const feedbackServices = [
+  "Engineering & Manpower Services",
+  "Fire Equipment Sales & Services",
+  "Fire & Safety Training",
+  "Safety Audit & Compliance",
+  "Other",
+] as const;
+
+export const feedbackSchema = z.object({
+  name: z.string().trim().min(2, "Please tell us your name").max(120),
+  company: z.string().trim().max(120).optional().or(z.literal("")),
+  rating: z.coerce.number().int().min(1, "Please select a star rating").max(5),
+  service: z.enum(feedbackServices, { error: "Please select a service" }),
+  message: z
+    .string()
+    .trim()
+    .min(10, "Please write at least 10 characters")
+    .max(1000, "Keep your review under 1000 characters"),
+});
+
+export const feedbackIdSchema = z.object({
+  feedbackId: z.string().uuid("The review is invalid."),
+});
+
 export type EmployeeInput = z.infer<typeof employeeSchema>;
 export type LocationInput = z.infer<typeof locationSchema>;
 
@@ -104,6 +128,12 @@ export type InviteMemberFormState = {
 };
 
 export type ResetMemberPasswordFormState = {
+  error?: string;
+  success?: string;
+  fieldErrors?: Record<string, string[]>;
+};
+
+export type FeedbackFormState = {
   error?: string;
   success?: string;
   fieldErrors?: Record<string, string[]>;
