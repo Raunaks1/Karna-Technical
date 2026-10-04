@@ -1,6 +1,54 @@
 import { Phone, Mail, MapPin } from "lucide-react";
 import Link from "next/link";
-import Logo from "./Logo";
+import LogoBadge from "./LogoBadge";
+
+const FOOTER_SERVICES: { label: string; href: string; description: string }[] = [
+  {
+    label: "Manpower Supply",
+    href: "/#services",
+    description: "Skilled, semi-skilled and technical manpower on contract or project basis",
+  },
+  {
+    label: "Recruitment & Hiring",
+    href: "/#services",
+    description: "Screening, selection and placement of technical and non-technical professionals",
+  },
+  {
+    label: "Fire Equipment Supply",
+    href: "/#services",
+    description: "Fire extinguishers, hydrant systems, hose pipes, sand buckets and more",
+  },
+  {
+    label: "Equipment Installation",
+    href: "/#services",
+    description: "Professional installation of fire-fighting and safety equipment",
+  },
+  {
+    label: "Equipment Servicing",
+    href: "/#services",
+    description: "Inspection, testing, servicing and maintenance of fire-fighting equipment",
+  },
+  {
+    label: "Safety Gear & PPE",
+    href: "/#services",
+    description: "Helmets, safety shoes, reflective jackets, full body harnesses and cones",
+  },
+  {
+    label: "Fire & Safety Training",
+    href: "/#services",
+    description: "Fire safety, emergency response and evacuation training programs",
+  },
+  {
+    label: "Safety Audits",
+    href: "/#services",
+    description: "Workplace safety audits and detailed compliance reports",
+  },
+  {
+    label: "Risk Assessment & Compliance",
+    href: "/#services",
+    description: "Hazard identification, compliance inspections and corrective action recommendations",
+  },
+];
 
 export default function Footer() {
   return (
@@ -10,9 +58,7 @@ export default function Footer() {
           {/* Brand & Contact */}
           <div className="lg:col-span-2">
             <div className="flex items-center gap-4 mb-6">
-              <div className="bg-white rounded-full p-1">
-                <Logo className="w-12 h-12" />
-              </div>
+              <LogoBadge wrapperClassName="w-16 h-16 md:w-[72px] md:h-[72px]" />
               <h2 className="text-2xl font-heading font-bold text-white leading-tight max-w-[200px]">
                 Karna Technical Fire & Safety Services
               </h2>
@@ -63,13 +109,21 @@ export default function Footer() {
           {/* Services */}
           <div>
             <h3 className="text-lg font-bold text-white mb-6">Services</h3>
-            <ul className="flex flex-col gap-3">
-              <li className="text-sm hover:text-white transition-colors cursor-pointer">Equipment Servicing</li>
-              <li className="text-sm hover:text-white transition-colors cursor-pointer">Safety Training</li>
-              <li className="text-sm hover:text-white transition-colors cursor-pointer">Manpower Supply</li>
-              <li className="text-sm hover:text-white transition-colors cursor-pointer">Safety Audits</li>
-              <li className="text-sm hover:text-white transition-colors cursor-pointer">Equipment Installation</li>
-            </ul>
+            <nav aria-label="Services">
+              <ul className="flex flex-col gap-3">
+                {FOOTER_SERVICES.map((service) => (
+                  <li key={service.label}>
+                    <Link
+                      href={service.href}
+                      title={service.description}
+                      className="text-sm hover:text-white transition-colors focus-visible:outline-2 focus-visible:outline-primary focus-visible:text-white rounded-sm max-md:min-h-[44px] max-md:inline-flex max-md:items-center"
+                    >
+                      {service.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </nav>
           </div>
         </div>
 

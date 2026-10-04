@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Menu, X, Phone, Moon, Sun } from "lucide-react";
-import Logo from "./Logo";
+import LogoBadge from "./LogoBadge";
 import ScrollProgressBar from "./ScrollProgressBar";
 import { useTheme } from "./ThemeProvider";
 
@@ -25,8 +25,8 @@ export default function Navbar() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-gray-950/95 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 shadow-sm transition-colors duration-300">
         <div className="container mx-auto px-4 md:px-8 flex items-center justify-between h-20">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 shrink-0">
-            <Logo className="w-12 h-12" />
+          <Link href="/" aria-label="Karna Technical Fire & Safety Services - Home" className="flex items-center gap-3 shrink-0">
+            <LogoBadge wrapperClassName="w-11 h-11 lg:w-[52px] lg:h-[52px]" />
             <div className="hidden sm:block">
               <p className="font-heading font-bold text-sm leading-tight text-gray-900 dark:text-white">
                 Karna Technical
