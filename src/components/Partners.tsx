@@ -1,12 +1,5 @@
 export default function Partners() {
-  const partners = [
-    "Carbonic Industries",
-    "Karam",
-    "Venus",
-    "Intime Fire",
-    "Varuney MFG Industries",
-    "Safe Fire",
-  ];
+  const partners = ["Varia Fire", "Carbonic Industries"];
 
   return (
     <section id="partners" className="py-20 bg-white dark:bg-gray-900 transition-colors duration-300 scroll-mt-20">
