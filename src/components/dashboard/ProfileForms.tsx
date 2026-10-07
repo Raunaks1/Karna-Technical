@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { useFormStatus } from "react-dom";
 import { Eye, EyeOff, LoaderCircle, Save } from "lucide-react";
 import type {
+  ProfileEmailFormState,
   ProfileNameFormState,
   ProfilePasswordFormState,
 } from "@/lib/validation";
@@ -49,6 +50,11 @@ type ProfilePasswordAction = (
   formData: FormData,
 ) => Promise<ProfilePasswordFormState>;
 
+type ProfileEmailAction = (
+  state: ProfileEmailFormState,
+  formData: FormData,
+) => Promise<ProfileEmailFormState>;
+
 function NameSubmitButton() {
   const { pending } = useFormStatus();
 
@@ -75,6 +81,21 @@ function PasswordSubmitButton() {
     >
       {pending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
       {pending ? "Updating..." : "Update password"}
+    </button>
+  );
+}
+
+function EmailSubmitButton() {
+  const { pending } = useFormStatus();
+
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-lg shadow-red-950/10 transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
+    >
+      {pending ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+      {pending ? "Sending..." : "Send confirmation link"}
     </button>
   );
 }
@@ -161,6 +182,54 @@ export function PasswordForm({ action }: { action: ProfilePasswordAction }) {
       </div>
       <div className="flex justify-end">
         <PasswordSubmitButton />
+      </div>
+    </form>
+  );
+}
+
+export function EmailForm({
+  currentEmail,
+  action,
+}: {
+  currentEmail: string;
+  action: ProfileEmailAction;
+}) {
+  const [state, formAction] = useActionState(action, {});
+
+  return (
+    <form action={formAction} className="space-y-5">
+      <FormMessage error={state.error} success={state.success} />
+      <div className="grid gap-5 md:grid-cols-2">
+        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+          New email
+          <input
+            name="newEmail"
+            type="email"
+            defaultValue=""
+            placeholder={currentEmail}
+            autoComplete="email"
+            className={inputClass}
+            required
+            maxLength={160}
+          />
+          <FieldError message={state.fieldErrors?.newEmail} />
+        </label>
+        <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300">
+          Confirm new email
+          <input
+            name="confirmEmail"
+            type="email"
+            placeholder="Repeat the new email"
+            autoComplete="email"
+            className={inputClass}
+            required
+            maxLength={160}
+          />
+          <FieldError message={state.fieldErrors?.confirmEmail} />
+        </label>
+      </div>
+      <div className="flex justify-end">
+        <EmailSubmitButton />
       </div>
     </form>
   );

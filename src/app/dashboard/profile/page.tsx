@@ -1,6 +1,6 @@
 import { KeyRound, Mail, ShieldCheck, UserRound } from "lucide-react";
-import { PasswordForm, ProfileNameForm } from "@/components/dashboard/ProfileForms";
-import { updateProfileName, updateProfilePassword } from "@/app/dashboard/actions";
+import { EmailForm, PasswordForm, ProfileNameForm } from "@/components/dashboard/ProfileForms";
+import { updateProfileEmail, updateProfileName, updateProfilePassword } from "@/app/dashboard/actions";
 import { getMyProfile } from "@/lib/dashboard";
 import { formatDate } from "@/lib/format";
 
@@ -35,8 +35,8 @@ export default async function ProfilePage() {
           Your profile
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400">
-          Review your owner/HR account details, update your display name, or change your
-          password.
+          Review your owner/HR account details, update your display name, change your sign-in
+          email, or change your password.
         </p>
       </section>
 
@@ -68,7 +68,7 @@ export default async function ProfilePage() {
             </p>
             <p className="mt-1.5 truncate font-semibold">{profile.email}</p>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-              Read-only. Contact an owner to change it.
+              Change it with the form below. Confirmation is required.
             </p>
           </div>
           <div>
@@ -105,6 +105,28 @@ export default async function ProfilePage() {
           </div>
         </div>
         <ProfileNameForm currentName={profile.fullName} action={updateProfileName} />
+      </section>
+
+      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#11151d] sm:p-7">
+        <div className="mb-6 flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300">
+            <Mail className="h-5 w-5" />
+          </div>
+          <div>
+            <h2 className="font-heading text-lg font-extrabold">Change sign-in email</h2>
+            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+              We send a confirmation link. Your email updates after you click it.
+            </p>
+          </div>
+        </div>
+        <EmailForm currentEmail={profile.email} action={updateProfileEmail} />
+        <div className="mt-6 flex items-start gap-3 rounded-xl bg-slate-50 p-4 text-xs leading-5 text-slate-500 dark:bg-white/5 dark:text-slate-400">
+          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+          <span>
+            Changing email keeps the same account — your name, role, and history stay intact.
+            Sign in with the new email after confirming.
+          </span>
+        </div>
       </section>
 
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#11151d] sm:p-7">

@@ -10,12 +10,14 @@ import {
   employeeSchema,
   getFormString,
   locationSchema,
+  profileEmailSchema,
   profileNameSchema,
   profilePasswordSchema,
   reviewDeletionSchema,
   type DeletionRequestFormState,
   type EmployeeFormState,
   type LocationFormState,
+  type ProfileEmailFormState,
   type ProfileNameFormState,
   type ProfilePasswordFormState,
 } from "@/lib/validation";
@@ -476,4 +478,52 @@ export async function updateProfilePassword(
 
   revalidatePath("/dashboard/profile");
   return { success: "Password updated. Use it the next time you sign in." };
+}
+
+export async function updateProfileEmail(
+  _previousState: ProfileEmailFormState,
+  formData: FormData,
+): Promise<ProfileEmailFormState> {
+  const user = await requireDashboardUser();
+  const parsed = profileEmailSchema.safeParse({
+    newEmail: getFormString(formData, "newEmail"),
+    confirmEmail: getFormString(formData, "confirmEmail"),
+  });
+
+  if (!parsed.success) {
+    return {
+      error: "Review the highlighted fields and try again.",
+      fieldErrors: parsed.error.flatten().fieldErrors,
+    };
+  }
+
+  const newEmail = parsed.data.newEmail.trim();
+
+  if (newEmail.toLowerCase() === user.email.toLowerCase()) {
+    return { error: "That is already your sign-in email." };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.updateUser({ email: newEmail });
+
+  if (error) {
+    const message = error.message.toLowerCase();
+
+    if (message.includes("already") || message.includes("registered") || message.includes("exists")) {
+      return { error: "That email is already registered to another account." };
+    }
+
+    if (message.includes("rate limit") || message.includes("too many")) {
+      return { error: "Too many attempts. Wait a few minutes and try again." };
+    }
+
+    return { error: "Your email could not be updated. Please try again." };
+  }
+
+  revalidatePath("/dashboard/profile");
+  revalidatePath("/dashboard", "layout");
+  return {
+    success:
+      "Confirmation sent. Click the link in your new inbox (and current inbox, if asked) to finish the change — then sign in with the new email.",
+  };
 }

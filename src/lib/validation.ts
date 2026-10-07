@@ -32,6 +32,16 @@ export const profilePasswordSchema = z
     path: ["confirmPassword"],
   });
 
+export const profileEmailSchema = z
+  .object({
+    newEmail: z.string().trim().email("Enter a valid email address").max(160),
+    confirmEmail: z.string().trim().email("Confirm your new email address").max(160),
+  })
+  .refine((values) => values.newEmail.toLowerCase() === values.confirmEmail.toLowerCase(), {
+    message: "Email addresses do not match",
+    path: ["confirmEmail"],
+  });
+
 export const deletionRequestSchema = z.object({
   employeeId: z.string().uuid("The employee record is invalid."),
   reason: z
@@ -110,6 +120,12 @@ export type ProfileNameFormState = {
 };
 
 export type ProfilePasswordFormState = {
+  error?: string;
+  success?: string;
+  fieldErrors?: Record<string, string[]>;
+};
+
+export type ProfileEmailFormState = {
   error?: string;
   success?: string;
   fieldErrors?: Record<string, string[]>;
