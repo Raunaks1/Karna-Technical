@@ -8,8 +8,11 @@ export type TeamMember = {
   id: string;
   email: string;
   fullName: string;
-  role: "owner" | "hr";
+  role: "owner" | "hr" | "marketing";
   status: string;
+  isPendingInvite: boolean;
+  invited_at: string | null;
+  last_sign_in_at: string | null;
   created_at: string;
 };
 
@@ -17,7 +20,7 @@ export type MyProfile = {
   id: string;
   email: string;
   fullName: string;
-  role: "owner" | "hr";
+  role: "owner" | "hr" | "marketing";
   status: string;
   created_at: string;
   mustChangePassword: boolean;
@@ -218,17 +221,40 @@ export async function listTeamMembers(): Promise<TeamMember[]> {
     );
   }
 
-  const emails = new Map((authUsers?.users ?? []).map((authUser) => [authUser.id, authUser.email ?? ""]));
+  const authMap = new Map(
+    (authUsers?.users ?? []).map((authUser) => [
+      authUser.id,
+      {
+        email: authUser.email ?? "",
+        invited_at: authUser.invited_at ?? null,
+        confirmed_at:
+          (authUser as { confirmed_at?: string | null; email_confirmed_at?: string | null })
+            .confirmed_at ??
+          (authUser as { confirmed_at?: string | null; email_confirmed_at?: string | null })
+            .email_confirmed_at ??
+          null,
+        last_sign_in_at: authUser.last_sign_in_at ?? null,
+      },
+    ]),
+  );
 
-  return ((profiles ?? []) as { id: string; full_name: string | null; role: "owner" | "hr"; status: string | null; created_at: string | null }[]).map(
-    (profile) => ({
-      id: profile.id,
-      email: emails.get(profile.id) ?? "",
-      fullName: profile.full_name ?? "",
-      role: profile.role,
-      status: profile.status ?? "active",
-      created_at: profile.created_at ?? "",
-    }),
+  return ((profiles ?? []) as { id: string; full_name: string | null; role: "owner" | "hr" | "marketing"; status: string | null; created_at: string | null }[]).map(
+    (profile) => {
+      const authInfo = authMap.get(profile.id);
+      const isPendingInvite = Boolean(authInfo?.invited_at && !authInfo?.last_sign_in_at);
+
+      return {
+        id: profile.id,
+        email: authInfo?.email ?? "",
+        fullName: profile.full_name ?? "",
+        role: profile.role,
+        status: profile.status ?? "active",
+        isPendingInvite,
+        invited_at: authInfo?.invited_at ?? null,
+        last_sign_in_at: authInfo?.last_sign_in_at ?? null,
+        created_at: profile.created_at ?? "",
+      };
+    },
   );
 }
 

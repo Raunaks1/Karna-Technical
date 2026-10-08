@@ -20,13 +20,14 @@ export default function LoginForm() {
     setLoading(true);
 
     const supabase = createClient();
+    const cleanEmail = email.trim().toLowerCase();
     const { error: signInError } = await supabase.auth.signInWithPassword({
-      email,
+      email: cleanEmail,
       password,
     });
 
     if (signInError) {
-      setError("The email or password is not recognized.");
+      setError(signInError.message || "The email or password is not recognized.");
       setLoading(false);
       return;
     }

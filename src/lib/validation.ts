@@ -59,8 +59,7 @@ export const reviewDeletionSchema = z.object({
 export const inviteMemberSchema = z.object({
   fullName: z.string().trim().min(2, "Full name is required").max(120),
   email: z.string().trim().email("Enter a valid email address").max(160),
-  password: z.string().min(8, "Use at least 8 characters").max(72),
-  role: z.enum(["hr", "owner"]),
+  role: z.enum(["hr", "owner", "marketing"]),
 });
 
 export const resetMemberPasswordSchema = z.object({
@@ -140,6 +139,7 @@ export type DeletionRequestFormState = {
 export type InviteMemberFormState = {
   error?: string;
   success?: string;
+  inviteLink?: string;
   fieldErrors?: Record<string, string[]>;
 };
 

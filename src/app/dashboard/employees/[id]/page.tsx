@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import EmployeeForm from "@/components/dashboard/EmployeeForm";
 import StatusBadge from "@/components/dashboard/StatusBadge";
 import { updateEmployee } from "@/app/dashboard/actions";
+import { canEditData, getDashboardUser } from "@/lib/auth";
 import { getEmployee, listLocations } from "@/lib/dashboard";
 import { formatDate } from "@/lib/format";
 
@@ -27,6 +28,9 @@ export default async function EmployeeDetailPage({
   if (!employee) {
     notFound();
   }
+
+  const user = await getDashboardUser();
+  const canEdit = user ? canEditData(user.role) : false;
 
   return (
     <div className="space-y-8">
@@ -80,13 +84,15 @@ export default async function EmployeeDetailPage({
         </div>
       </section>
 
-      <section>
-        <div className="mb-5">
-          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary">Edit record</p>
-          <h2 className="mt-2 font-heading text-xl font-extrabold">Update employee information</h2>
-        </div>
-        <EmployeeForm action={updateEmployee} locations={locations} employee={employee} mode="edit" />
-      </section>
+      {canEdit && (
+        <section>
+          <div className="mb-5">
+            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-primary">Edit record</p>
+            <h2 className="mt-2 font-heading text-xl font-extrabold">Update employee information</h2>
+          </div>
+          <EmployeeForm action={updateEmployee} locations={locations} employee={employee} mode="edit" />
+        </section>
+      )}
     </div>
   );
 }

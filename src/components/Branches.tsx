@@ -11,12 +11,20 @@ export default function Branches() {
     phoneHref?: string;
     highlight?: string;
   }[] = [
-    { city: "Pithampur (Indore)", region: "Dhar", state: "Madhya Pradesh" },
+    {
+      city: "Pithampur (Indore)",
+      region: "Dhar",
+      state: "Madhya Pradesh",
+      phone: "+91 8169437734",
+      phoneHref: "tel:+918169437734",
+    },
     {
       city: "Jamnagar",
       region: "",
       state: "Gujarat",
       highlight: "Manufacturing Unit — Joint Venture with Varia Fire",
+      phone: "+91 8169437734",
+      phoneHref: "tel:+918169437734",
     },
     {
       city: "Gohparu",
@@ -24,8 +32,8 @@ export default function Branches() {
       state: "Madhya Pradesh",
       address: "Karua Road, Gohparu, District Shahdol, Madhya Pradesh – 484770",
       contactPerson: "Mr. Ambuj Sen",
-      phone: "+91 97551 54134",
-      phoneHref: "tel:+919755154134",
+      phone: "+91 8169437734",
+      phoneHref: "tel:+918169437734",
     },
     {
       city: "Ramnagar",
@@ -33,10 +41,16 @@ export default function Branches() {
       state: "Madhya Pradesh",
       address: "Bamhanadi Village Road, Opp. Om Palace, Ramnagar, Madhya Pradesh – 485881",
       contactPerson: "Mr. Chandrabhan Sen",
-      phone: "+91 83196 84854",
-      phoneHref: "tel:+918319684854",
+      phone: "+91 8169437734",
+      phoneHref: "tel:+918169437734",
     },
-    { city: "Bhopal", region: "", state: "Madhya Pradesh" },
+    {
+      city: "Bhopal",
+      region: "",
+      state: "Madhya Pradesh",
+      phone: "+91 8169437734",
+      phoneHref: "tel:+918169437734",
+    },
   ];
 
   return (

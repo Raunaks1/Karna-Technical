@@ -62,7 +62,8 @@ export default function ForgotPasswordForm() {
         <h1 className="font-heading text-2xl font-extrabold tracking-tight">Check your inbox</h1>
         <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
           If an owner or HR account exists for <span className="font-bold">{email}</span>, a
-          password-reset link is on its way. It expires in 24 hours — also check spam.
+          password-reset link is on its way. Links expire quickly (Supabase&apos;s email-link
+          lifetime is 1 hour by default) — click it right away, and check spam.
         </p>
         <div className="mt-7 space-y-3">
           <button

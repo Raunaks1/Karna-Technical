@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import StatusBadge from "@/components/dashboard/StatusBadge";
 import DeletionReviewCard from "@/components/dashboard/DeletionReviewCard";
-import { getDashboardUser } from "@/lib/auth";
+import { canEditData, getDashboardUser } from "@/lib/auth";
 import { listDeletionRequests, listEmployees, listLocations } from "@/lib/dashboard";
 import { formatDateTime } from "@/lib/format";
 
@@ -55,6 +55,7 @@ export default async function DashboardPage() {
     listDeletionRequests("pending"),
   ]);
   const isOwner = user?.role === "owner";
+  const canEdit = user ? canEditData(user.role) : false;
   const activeEmployees = employees.filter((employee) => employee.status === "active");
   const recentEmployees = [...employees]
     .sort((first, second) => second.created_at.localeCompare(first.created_at))
@@ -78,16 +79,18 @@ export default async function DashboardPage() {
             </div>
             <h1 className="font-heading text-3xl font-extrabold tracking-tight sm:text-4xl">Good morning, manage your people with clarity.</h1>
             <p className="mt-4 max-w-xl text-sm leading-6 text-slate-300 sm:text-base">
-              Keep employee information organized, searchable, and available only to your authorized owner and HR team.
+              Keep employee information organized, searchable, and available only to your authorized team.
             </p>
           </div>
-          <Link
-            href="/dashboard/employees/new"
-            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-950/20 transition hover:bg-primary-hover"
-          >
-            <Plus className="h-4 w-4" />
-            Add employee
-          </Link>
+          {canEdit && (
+            <Link
+              href="/dashboard/employees/new"
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-950/20 transition hover:bg-primary-hover"
+            >
+              <Plus className="h-4 w-4" />
+              Add employee
+            </Link>
+          )}
         </div>
       </section>
 

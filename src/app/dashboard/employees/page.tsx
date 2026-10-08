@@ -15,7 +15,7 @@ import StatusBadge from "@/components/dashboard/StatusBadge";
 import OwnerDeleteButton from "@/components/dashboard/OwnerDeleteButton";
 import RequestDeletionDialog from "@/components/dashboard/RequestDeletionDialog";
 import { deactivateEmployee, deleteEmployee, requestDeletion } from "@/app/dashboard/actions";
-import { getDashboardUser } from "@/lib/auth";
+import { canEditData, getDashboardUser } from "@/lib/auth";
 import { listDeletionRequests, listEmployees, listLocations, type EmployeeStatus } from "@/lib/dashboard";
 import { formatDate } from "@/lib/format";
 
@@ -46,6 +46,7 @@ export default async function EmployeesPage({
     listDeletionRequests("pending"),
   ]);
   const isOwner = user?.role === "owner";
+  const canEdit = user ? canEditData(user.role) : false;
   const pendingByEmployee = new Map(pendingRequests.map((request) => [request.employee_id, request]));
 
   return (
@@ -59,13 +60,15 @@ export default async function EmployeesPage({
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-3">
-          <Link
-            href="/dashboard/employees/new"
-            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-950/10 transition hover:bg-primary-hover"
-          >
-            <Plus className="h-4 w-4" />
-            Add employee
-          </Link>
+          {canEdit && (
+            <Link
+              href="/dashboard/employees/new"
+              className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-950/10 transition hover:bg-primary-hover"
+            >
+              <Plus className="h-4 w-4" />
+              Add employee
+            </Link>
+          )}
           {isOwner && (
             <Link
               href="/dashboard/employees/deleted"
@@ -214,7 +217,7 @@ export default async function EmployeesPage({
                               View
                               <ChevronRight className="h-3.5 w-3.5" />
                             </Link>
-                            {employee.status === "active" && (
+                            {canEdit && employee.status === "active" && (
                               <form action={deactivateEmployee}>
                                 <input type="hidden" name="employeeId" value={employee.id} />
                                 <button
@@ -235,13 +238,13 @@ export default async function EmployeesPage({
                                 employeeName={employee.full_name}
                                 action={deleteEmployee}
                               />
-                            ) : (
+                            ) : canEdit ? (
                               <RequestDeletionDialog
                                 employeeId={employee.id}
                                 employeeName={employee.full_name}
                                 action={requestDeletion}
                               />
-                            )}
+                            ) : null}
                           </div>
                       </td>
                     </tr>
@@ -295,7 +298,7 @@ export default async function EmployeesPage({
                           View details
                         </Link>
                         <div className="flex items-center gap-3">
-                          {employee.status === "active" && (
+                          {canEdit && employee.status === "active" && (
                             <form action={deactivateEmployee}>
                               <input type="hidden" name="employeeId" value={employee.id} />
                               <button type="submit" className="text-xs font-bold text-slate-400 hover:text-primary">
@@ -314,13 +317,13 @@ export default async function EmployeesPage({
                               action={deleteEmployee}
                               compact
                             />
-                          ) : (
+                          ) : canEdit ? (
                             <RequestDeletionDialog
                               employeeId={employee.id}
                               employeeName={employee.full_name}
                               action={requestDeletion}
                             />
-                          )}
+                          ) : null}
                         </div>
                       </div>
                     </div>
@@ -338,10 +341,12 @@ export default async function EmployeesPage({
             <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-slate-500 dark:text-slate-400">
               Try clearing your filters or add the first employee record to this workspace.
             </p>
-            <Link href="/dashboard/employees/new" className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline">
-              <Plus className="h-4 w-4" />
-              Add employee
-            </Link>
+            {canEdit && (
+              <Link href="/dashboard/employees/new" className="mt-6 inline-flex items-center gap-2 text-sm font-bold text-primary hover:underline">
+                <Plus className="h-4 w-4" />
+                Add employee
+              </Link>
+            )}
           </div>
         )}
       </section>

@@ -39,7 +39,7 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 1. Create a project at [supabase.com](https://supabase.com).
 2. Open the SQL Editor and run each file in `supabase/migrations/` in order. If you already ran the earlier ones, just run the newer files you haven't run yet.
-3. Copy `.env.example` to `.env.local` and fill in the Project URL and `anon public` or `publishable` key from **Project Settings → Data API**. For the owner-only **Team** page (invite/reset/remove accounts), also add `SUPABASE_SERVICE_ROLE_KEY` from **Project Settings → API** (server-only secret — never prefix it with `NEXT_PUBLIC_`, never commit it). To email login credentials on invite, also add `RESEND_API_KEY` and `RESEND_FROM` (see https://resend.com).
+3. Copy `.env.example` to `.env.local` and fill in the Project URL and `anon public` or `publishable` key from **Project Settings → Data API**. For the owner-only **Team** page (invite/reset/remove accounts), also add `SUPABASE_SERVICE_ROLE_KEY` from **Project Settings → API** (server-only secret — never prefix it with `NEXT_PUBLIC_`, never commit it). To email Team invitations, also add `RESEND_API_KEY`, `RESEND_FROM` (see https://resend.com), and `NEXT_PUBLIC_SITE_URL` (local: `http://localhost:3000`, production: your Vercel URL — used to build absolute invitation links).
 4. Disable public sign-ups under **Authentication → Sign In / Providers → Email**, then create the first owner from **Authentication → Users**.
 5. Give that user a profile by running this in the SQL Editor, replacing the email and name:
 
@@ -50,7 +50,20 @@ from auth.users
 where email = 'owner@example.com';
 ```
 
-6. For Vercel, add `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, and `RESEND_FROM` under **Project Settings → Environment Variables**, then redeploy.
-7. Restart the local server and open `/login`. Additional owner/HR accounts can be invited from the dashboard at `/dashboard/team` (owner only) — login credentials are emailed to them and they must change the password on first sign-in. Without a verified sending domain, Resend delivers test mail to your own address only, so verify your domain in Resend before inviting real addresses.
+6. For Vercel, add `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, `RESEND_FROM`, and `NEXT_PUBLIC_SITE_URL` (your production URL) under **Project Settings → Environment Variables**, then redeploy.
+7. Restart the local server and open `/login`. Additional owner/HR accounts are invited from the dashboard at `/dashboard/team` (owner only) — each invitee gets a secure magic link to accept and set their password (no temporary passwords). Deactivating or removing the last active owner is blocked to prevent lockout.
+8. **Fix invite email delivery (one-time):** Resend's `onboarding@resend.dev` sender only delivers to your own inbox, so real invites never arrive until you verify your domain:
+   1. Resend → **Domains** → **Add Domain** → enter `karnaengservice.com`.
+   2. Open its **Records** tab and copy the SPF/DKIM values exactly (TXT/MX, or CNAMEs for newer domains — add them at the `send` subdomain shown, not root).
+   3. Squarespace → **Domains** → click the domain → **DNS** → **DNS Settings** → **Custom Records** → **Add record** for each value.
+   4. Back in Resend, verify the domain (usually ~15 min, up to 72 h for DNS propagation).
+   5. Set `RESEND_FROM` to a verified address (e.g. `Karna Technical <team@karnaengservice.com>`) in `.env.local` and Vercel Production env, then redeploy. Until then, use the invitation link shown after each invite (copy + share manually).
+
+9. **Unlock Supabase email templates with Resend SMTP (one-time, required for forgot-password):** Supabase locks template editing until custom SMTP is configured. Reuse your Resend key — no app code changes needed:
+   1. Supabase → **Project Settings → Configuration → SMTP Settings** → enable custom SMTP: Host `smtp.resend.com`, Port `465`, Username `resend`, Password = your `RESEND_API_KEY`, Sender name `Karna Technical`, Sender email = a Resend-sendable address. Save and send the test email.
+   2. Auth → **Email Templates** → **Reset password** → in Source view set the link to `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery` (our `/auth/confirm` route verifies exactly this shape server-side). Save.
+   3. Auth → **URL Configuration**: Site URL = production URL; Additional Redirect URLs must include `http://localhost:3000/**` and `https://<your-prod>/**`.
+   4. Auth → Providers → **Email**: note **Email OTP Expiration** (default 3600s = 1h — it also governs invite/recovery links; raise to at most 86400s if your people click late).
+   5. Request a **fresh** reset email and check its button URL starts with `<origin>/auth/confirm?token_hash=…` — that proves the new template is live. Old emails stay dead; every link works once, so click promptly and don't resend mid-test.
 
 Never put the Supabase service-role key in the frontend or commit `.env.local`.

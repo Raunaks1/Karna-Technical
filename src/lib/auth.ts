@@ -1,8 +1,10 @@
 import { redirect } from "next/navigation";
 import { isSupabaseConfigured } from "./supabase/config";
 import { createClient } from "./supabase/server";
+import type { DashboardRole } from "./roles";
 
-export type DashboardRole = "owner" | "hr";
+export type { DashboardRole };
+export { canEditData, isOwnerRole, roleLabel, roleShortLabel } from "./roles";
 
 export type DashboardUser = {
   id: string;
@@ -13,7 +15,7 @@ export type DashboardUser = {
 };
 
 function isDashboardRole(value: unknown): value is DashboardRole {
-  return value === "owner" || value === "hr";
+  return value === "owner" || value === "hr" || value === "marketing";
 }
 
 export async function getDashboardUser(): Promise<DashboardUser | null> {

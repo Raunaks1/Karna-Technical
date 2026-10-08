@@ -2,6 +2,7 @@ import { KeyRound, Mail, ShieldCheck, UserRound } from "lucide-react";
 import { EmailForm, PasswordForm, ProfileNameForm } from "@/components/dashboard/ProfileForms";
 import { updateProfileEmail, updateProfileName, updateProfilePassword } from "@/app/dashboard/actions";
 import { getMyProfile } from "@/lib/dashboard";
+import { roleLabel } from "@/lib/auth";
 import { formatDate } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
@@ -54,7 +55,7 @@ export default async function ProfilePage() {
           </div>
           <div className="flex shrink-0 items-center gap-2">
             <span className="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold capitalize text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
-              {profile.role === "owner" ? "Owner" : "HR administrator"}
+              {roleLabel(profile.role)}
             </span>
             <span className="rounded-full bg-emerald-50 px-3 py-1.5 text-xs font-bold capitalize text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
               {profile.status}

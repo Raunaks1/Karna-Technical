@@ -20,17 +20,18 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import type { DashboardUser } from "@/lib/auth";
+import { canEditData, roleLabel } from "@/lib/roles";
 import Logo from "@/components/Logo";
 import ThemeToggle from "@/components/dashboard/ThemeToggle";
 
 const navigation = [
-  { label: "Overview", href: "/dashboard", icon: LayoutDashboard, ownerOnly: false },
-  { label: "Employees", href: "/dashboard/employees", icon: Users, ownerOnly: false },
-  { label: "Add employee", href: "/dashboard/employees/new", icon: Plus, ownerOnly: false },
-  { label: "Locations", href: "/dashboard/locations", icon: MapPin, ownerOnly: false },
-  { label: "Approvals", href: "/dashboard/approvals", icon: UserCheck, ownerOnly: true },
-  { label: "Team", href: "/dashboard/team", icon: UserCog, ownerOnly: true },
-  { label: "Feedback", href: "/dashboard/feedback", icon: Star, ownerOnly: false },
+  { label: "Overview", href: "/dashboard", icon: LayoutDashboard, ownerOnly: false, editorOnly: false },
+  { label: "Employees", href: "/dashboard/employees", icon: Users, ownerOnly: false, editorOnly: false },
+  { label: "Add employee", href: "/dashboard/employees/new", icon: Plus, ownerOnly: false, editorOnly: true },
+  { label: "Locations", href: "/dashboard/locations", icon: MapPin, ownerOnly: false, editorOnly: false },
+  { label: "Approvals", href: "/dashboard/approvals", icon: UserCheck, ownerOnly: true, editorOnly: false },
+  { label: "Team", href: "/dashboard/team", icon: UserCog, ownerOnly: true, editorOnly: false },
+  { label: "Feedback", href: "/dashboard/feedback", icon: Star, ownerOnly: false, editorOnly: false },
 ];
 
 function LogoutButton({ compact = false }: { compact?: boolean }) {
@@ -120,7 +121,7 @@ function ProfileMenu({ user }: { user: DashboardUser }) {
               <p className="truncate text-sm font-bold">{user.fullName}</p>
               <p className="truncate text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
               <span className="mt-1.5 inline-block rounded-full border border-slate-200 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:border-white/10 dark:text-slate-400">
-                {user.role === "owner" ? "Owner" : "HR administrator"}
+                {roleLabel(user.role)}
               </span>
             </div>
           </div>
@@ -153,7 +154,10 @@ export default function DashboardShell({
 }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const visibleNavigation = navigation.filter((item) => !item.ownerOnly || user.role === "owner");
+  const visibleNavigation = navigation.filter(
+    (item) =>
+      (!item.ownerOnly || user.role === "owner") && (!item.editorOnly || canEditData(user.role)),
+  );
 
   function isActive(href: string) {
     if (href === "/dashboard") {
@@ -253,7 +257,7 @@ export default function DashboardShell({
             <div className="flex items-center gap-3">
               <ThemeToggle />
               <div className="hidden rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 sm:block">
-                {user.role === "owner" ? "Owner" : "HR administrator"}
+                {roleLabel(user.role)}
               </div>
               <ProfileMenu key={pathname} user={user} />
             </div>

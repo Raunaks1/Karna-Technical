@@ -1,12 +1,14 @@
 import { MapPin, Plus } from "lucide-react";
 import LocationForm from "@/components/dashboard/LocationForm";
 import { createLocation } from "@/app/dashboard/actions";
+import { canEditData, getDashboardUser } from "@/lib/auth";
 import { listLocations } from "@/lib/dashboard";
 
 export const dynamic = "force-dynamic";
 
 export default async function LocationsPage() {
-  const locations = await listLocations();
+  const [locations, user] = await Promise.all([listLocations(), getDashboardUser()]);
+  const canEdit = user ? canEditData(user.role) : false;
 
   return (
     <div className="space-y-8">
@@ -18,7 +20,7 @@ export default async function LocationsPage() {
         </p>
       </section>
 
-      <LocationForm action={createLocation} />
+      {canEdit && <LocationForm action={createLocation} />}
 
       <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#11151d]">
         <div className="flex items-center justify-between border-b border-slate-100 px-5 py-5 dark:border-white/10 sm:px-7">

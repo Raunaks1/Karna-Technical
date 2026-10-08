@@ -6,10 +6,36 @@ import { FormEvent, useEffect, useState } from "react";
 import { CheckCircle2, Eye, EyeOff, KeyRound, LoaderCircle } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
-export default function SetPasswordForm({ linkError }: { linkError: string | null }) {
+const LINK_COPY: Record<string, string> = {
+  rejected:
+    "The link was rejected before it could be verified — usually the app URL is not allowlisted in Supabase Auth → URL Configuration. Ask the workspace owner to check that setting and send you a fresh invite.",
+  invalid:
+    "The link has expired or was already used. Ask for a fresh link — open the newest email once and set your password right away. Tip: some mail apps open links in preview first, which uses the link up.",
+  missing:
+    "This page needs a valid invite link. Open the newest invitation email and click its button once — if you already set a password, sign in below.",
+};
+
+function linkMessage(linkError: string | null, linkReason: string | null) {
+  if (linkReason && LINK_COPY[linkReason]) {
+    return LINK_COPY[linkReason];
+  }
+
+  return linkError === "expired"
+    ? LINK_COPY.invalid
+    : "Open the invite link from your email to set your password. If you already set it, sign in below.";
+}
+
+export default function SetPasswordForm({
+  linkError,
+  linkReason = null,
+}: {
+  linkError: string | null;
+  linkReason?: string | null;
+}) {
   const router = useRouter();
   const [checking, setChecking] = useState(!linkError);
   const [hasSession, setHasSession] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -27,6 +53,7 @@ export default function SetPasswordForm({ linkError }: { linkError: string | nul
       .getUser()
       .then(({ data }) => {
         setHasSession(Boolean(data.user));
+        setUserEmail(data.user?.email ?? null);
         setChecking(false);
       })
       .catch(() => setChecking(false));
@@ -48,7 +75,9 @@ export default function SetPasswordForm({ linkError }: { linkError: string | nul
 
     setLoading(true);
     const supabase = createClient();
-    const { error: updateError } = await supabase.auth.updateUser({ password: newPassword });
+    const { data: updatedData, error: updateError } = await supabase.auth.updateUser({
+      password: newPassword,
+    });
 
     if (updateError) {
       setError("Your password could not be set. The link may have expired — ask the owner to re-invite you.");
@@ -56,9 +85,15 @@ export default function SetPasswordForm({ linkError }: { linkError: string | nul
       return;
     }
 
+    if (updatedData?.user?.id) {
+      await supabase
+        .from("profiles")
+        .update({ must_change_password: false })
+        .eq("id", updatedData.user.id);
+    }
+
     setDone(true);
     setLoading(false);
-    await supabase.auth.signOut();
     router.refresh();
   }
 
@@ -70,9 +105,7 @@ export default function SetPasswordForm({ linkError }: { linkError: string | nul
         </div>
         <h1 className="font-heading text-2xl font-extrabold tracking-tight">This link isn&apos;t valid</h1>
         <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
-          {linkError === "expired"
-            ? "The invite link has expired or was already used. Ask the workspace owner to send you a fresh invite."
-            : "Open the invite link from your email to set your password. If you already set it, sign in below."}
+          {linkMessage(linkError, linkReason)}
         </p>
         <Link
           href="/login"
@@ -99,15 +132,15 @@ export default function SetPasswordForm({ linkError }: { linkError: string | nul
         <div className="mb-5 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-300">
           <CheckCircle2 className="h-6 w-6" />
         </div>
-        <h1 className="font-heading text-2xl font-extrabold tracking-tight">Password set</h1>
+        <h1 className="font-heading text-2xl font-extrabold tracking-tight">Password set!</h1>
         <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
-          Your account is ready. Sign in with your email and new password.
+          Your account is verified and ready. You can now enter your dashboard.
         </p>
         <Link
-          href="/login"
-          className="mt-7 flex w-full items-center justify-center rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-white transition hover:bg-primary-hover"
+          href="/dashboard"
+          className="mt-7 flex w-full items-center justify-center rounded-xl bg-primary px-5 py-3.5 text-sm font-bold text-white shadow-lg shadow-red-950/15 transition hover:bg-primary-hover"
         >
-          Sign in
+          Go to Dashboard &rarr;
         </Link>
       </div>
     );
@@ -124,9 +157,14 @@ export default function SetPasswordForm({ linkError }: { linkError: string | nul
         </div>
         <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-primary">Set a new password</p>
         <h1 className="mt-3 font-heading text-3xl font-extrabold tracking-tight">Choose your password</h1>
-        <p className="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400">
+        <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
           Set a password to activate your account or finish resetting it.
         </p>
+        {userEmail && (
+          <div className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 dark:bg-white/10 dark:text-slate-200">
+            Account: <span className="font-mono text-primary font-bold">{userEmail}</span>
+          </div>
+        )}
       </div>
 
       {error && (

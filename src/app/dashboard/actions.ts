@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
-import { requireDashboardUser } from "@/lib/auth";
+import { canEditData, requireDashboardUser } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import {
   deletionRequestSchema,
@@ -41,6 +41,11 @@ export async function createEmployee(
   formData: FormData,
 ): Promise<EmployeeFormState> {
   const user = await requireDashboardUser();
+
+  if (!canEditData(user.role)) {
+    return { error: "Marketing Executives have view-only access." };
+  }
+
   const parsed = employeeSchema.safeParse(employeeFormValues(formData));
 
   if (!parsed.success) {
@@ -83,6 +88,11 @@ export async function updateEmployee(
   formData: FormData,
 ): Promise<EmployeeFormState> {
   const user = await requireDashboardUser();
+
+  if (!canEditData(user.role)) {
+    return { error: "Marketing Executives have view-only access." };
+  }
+
   const id = z.string().uuid().safeParse(getFormString(formData, "id"));
 
   if (!id.success) {
@@ -132,6 +142,11 @@ export async function updateEmployee(
 
 export async function deactivateEmployee(formData: FormData) {
   const user = await requireDashboardUser();
+
+  if (!canEditData(user.role)) {
+    throw new Error("Marketing Executives have view-only access.");
+  }
+
   const id = z.string().uuid().safeParse(getFormString(formData, "employeeId"));
 
   if (!id.success) {
@@ -186,6 +201,11 @@ export async function requestDeletion(
   formData: FormData,
 ): Promise<DeletionRequestFormState> {
   const user = await requireDashboardUser();
+
+  if (!canEditData(user.role)) {
+    return { error: "Marketing Executives have view-only access." };
+  }
+
   const parsed = deletionRequestSchema.safeParse({
     employeeId: getFormString(formData, "employeeId"),
     reason: getFormString(formData, "reason"),
@@ -244,6 +264,20 @@ export async function requestDeletion(
   revalidatePath("/dashboard/employees");
   revalidatePath("/dashboard/approvals");
   return { success: "Request sent. An owner will review it." };
+}
+
+/**
+ * Marketing Executives are view-only (except Feedback, which every
+ * dashboard role manages). Owners and HR keep full edit rights.
+ */
+async function requireEditor() {
+  const user = await requireDashboardUser();
+
+  if (!canEditData(user.role)) {
+    throw new Error("Marketing Executives have view-only access.");
+  }
+
+  return user;
 }
 
 async function requireOwner() {
@@ -384,7 +418,7 @@ export async function createLocation(
   _previousState: LocationFormState,
   formData: FormData,
 ): Promise<LocationFormState> {
-  await requireDashboardUser();
+  await requireEditor();
   const parsed = locationSchema.safeParse({
     name: getFormString(formData, "name"),
     city: getFormString(formData, "city"),

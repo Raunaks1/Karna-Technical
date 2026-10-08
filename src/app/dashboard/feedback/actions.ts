@@ -6,7 +6,8 @@ import { createClient } from "@/lib/supabase/server";
 import { feedbackIdSchema, getFormString } from "@/lib/validation";
 
 // Safety net only: reviews publish instantly with no approval step.
-// Owner and HR accounts can remove inappropriate entries here.
+// Every dashboard role (owner, HR, Marketing Executive) can remove
+// inappropriate entries here — the one management right Marketing keeps.
 export async function deleteFeedback(formData: FormData) {
   await requireDashboardUser();
   const parsed = feedbackIdSchema.safeParse({ feedbackId: getFormString(formData, "feedbackId") });
