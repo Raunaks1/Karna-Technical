@@ -86,8 +86,9 @@ export default async function TeamPage() {
             Team &amp; Access Control
           </h1>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-slate-500 dark:text-slate-400">
-            Invite and manage workspace Owners and HR administrators. New members receive a secure
-            magic invitation link to activate their account and set their password.
+            Invite and manage workspace Owners, HR administrators, and Marketing Executives.
+            New members receive a secure magic invitation link to activate their account and
+            set their password.
           </p>
         </div>
 
@@ -115,17 +116,23 @@ export default async function TeamPage() {
         <section className="rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm leading-6 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200 sm:p-6">
           <h2 className="font-heading text-base font-extrabold">Email delivery is in test mode</h2>
           <p className="mt-2">
-            Invites are sent from <code className="rounded bg-amber-100 px-1.5 py-0.5 font-mono text-xs dark:bg-white/10">onboarding@resend.dev</code>,
-            which Resend only delivers to your own inbox — real owner/HR addresses will never
-            receive them. The invitation link is still generated and shown after you invite
-            (copy and share it manually as a workaround).
+            Current sender:{" "}
+            <code className="rounded bg-amber-100 px-1.5 py-0.5 font-mono text-xs dark:bg-white/10">
+              {resendFrom || "(not set)"}
+            </code>{" "}
+            — Resend&apos;s test address only delivers to your own inbox, so real team addresses
+            will never receive invites. The invitation link is still generated and shown after
+            you invite (copy and share it manually as a workaround).
           </p>
           <p className="mt-2 text-xs leading-5 opacity-90">
-            To fix permanently: 1) Resend → Domains → add <strong>karnaengservice.com</strong>; 2)
-            add the SPF/DKIM records in Squarespace (Domains → domain → DNS → DNS Settings → Custom
-            Records); 3) verify the domain in Resend; 4) set <code className="rounded bg-amber-100 px-1.5 py-0.5 font-mono dark:bg-white/10">RESEND_FROM</code> to
-            a verified address (e.g. <code className="rounded bg-amber-100 px-1.5 py-0.5 font-mono dark:bg-white/10">Karna Technical &lt;team@karnaengservice.com&gt;</code>) in
-            <code className="rounded bg-amber-100 px-1.5 py-0.5 font-mono dark:bg-white/10">.env.local</code> and Vercel Production env, then redeploy.
+            To fix permanently: set <code className="rounded bg-amber-100 px-1.5 py-0.5 font-mono dark:bg-white/10">RESEND_FROM</code> to
+            an address on the verified Resend domain <strong>mail.karnaengservice.com</strong> (e.g.{" "}
+            <code className="rounded bg-amber-100 px-1.5 py-0.5 font-mono dark:bg-white/10">Karna Technical &lt;noreply@mail.karnaengservice.com&gt;</code>
+            — do not use root-domain addresses like team@karnaengservice.com, that domain is not
+            verified), plus <code className="rounded bg-amber-100 px-1.5 py-0.5 font-mono dark:bg-white/10">RESEND_REPLY_TO=karnatech@karnaengservice.com</code>,
+            in <code className="rounded bg-amber-100 px-1.5 py-0.5 font-mono dark:bg-white/10">.env.local</code> and the
+            Vercel Production env, then <strong>redeploy</strong> (env changes need a fresh
+            deployment). This banner disappears once the verified sender is live.
           </p>
         </section>
       )}
